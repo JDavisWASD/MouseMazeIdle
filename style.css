@@ -1,0 +1,12 @@
+.wall {
+    background-color: black;
+    height: 40px;
+    width: 40px;
+    display: inline-block;
+}
+.path {
+    background-color: gray;
+    height: 40px;
+    width: 40px;
+    display: inline-block;
+}
