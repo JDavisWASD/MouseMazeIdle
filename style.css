@@ -1,11 +1,27 @@
+.column {
+    line-height: 0;
+}
+
 .wall {
-    background-color: black;
+    background-color: orange;
+    background-image: url("sprites/wall.png");
+    background-size: contain;
     height: 40px;
     width: 40px;
     display: inline-block;
 }
+
 .path {
     background-color: gray;
+    height: 40px;
+    width: 40px;
+    display: inline-block;
+}
+
+.mouse {
+    background-color: gray;
+    background-image: url("sprites/mouseNorthL.png");
+    background-size: contain;
     height: 40px;
     width: 40px;
     display: inline-block;
