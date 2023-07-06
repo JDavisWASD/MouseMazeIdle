@@ -3,68 +3,139 @@ class PrimsMaze {
         this.maze = this.#buildMaze(width, height);
     }
 
+//1. Make grid of walls
+//2. Pick random cell & Set that cell as a path
+//3. Compute frontier cells
+//      - Has distance of 2
+//      - Status == "wall"
+//      - Is within grid dimensions
+//4. While the frontier list is not empty:
+//      - Pick a random cell from the frontier list
+//      - Set that cell as a path
+//      - Compute in between cell
+//      - Set that cell as a path
+//      - Compute new frontier cells
+//      - Remove current cell from frontier list
+
     #buildMaze(width, height) {
         let grid = [];
         let frontier = new Set();
-        console.log("Frontier size: " + frontier.size);
 
-//1. Make grid of walls
         for (let y = 0; y < height; y++) {
             grid[y] = [];
             for (let x = 0; x < width; x++) {
                 grid[y][x] = {
                     x: x,
                     y: y,
-                    status: "wall"
+                    status: "wall",
+                    neighbors: []
                 };
+
+                if (grid[y][x - 1]) {
+                    let westNeighbor = grid[y][x - 1];
+                    grid[y][x].neighbors.push(westNeighbor);
+                    westNeighbor.neighbors.push(grid[y][x - 1]);
+                }
+                if (grid[y - 1] && grid[y - 1][x]) {
+                    let northNeighbor = grid[y - 1][x];
+                    grid[y][x].neighbors.push(northNeighbor);
+                    northNeighbor.neighbors.push(grid[y][x]);
+                }
             }
         }
 
-//2. Pick random cell & Set that cell as a path
-        let startY = Math.floor(Math.random() * grid.length);
-        let startX = Math.floor(Math.random() * grid[startY].length);
-        grid[startY][startX].status = "path";
-        console.log(grid[startY][startX]);
+        let currentY = Math.floor(Math.random() * grid.length);
+        let currentX = Math.floor(Math.random() * grid[currentY].length);
+        let currentCell = grid[currentY][currentX];
+        currentCell.status = "path";
 
-//3. Compute frontier cells
-//      - Has distance of 2
-//      - Status == "wall"
-//      - Is within grid dimensions
-        if (grid[startY][startX - 2]
-            && grid[startY][startX - 2].status == "wall") {
-                frontier.add(grid[startY][startX - 2]);
+        if (grid[currentY][currentX - 2]
+            && grid[currentY][currentX - 2].status == "wall") {
+                frontier.add(grid[currentY][currentX - 2]);
         }
-        if (grid[startY][startX + 2]
-            && grid[startY][startX + 2].status == "wall") {
-                frontier.add(grid[startY][startX + 2]);
+        if (grid[currentY][currentX + 2]
+            && grid[currentY][currentX + 2].status == "wall") {
+                frontier.add(grid[currentY][currentX + 2]);
         }
-        if (grid[startY - 2]
-            && grid[startY - 2][startX]
-            && grid[startY - 2][startX].status == "wall") {
-                frontier.add(grid[startY - 2][startX]);
+        if (grid[currentY - 2]
+            && grid[currentY - 2][currentX]
+            && grid[currentY - 2][currentX].status == "wall") {
+                frontier.add(grid[currentY - 2][currentX]);
         }
-        if (grid[startY + 2]
-            && grid[startY + 2][startX]
-            && grid[startY + 2][startX].status == "wall") {
-                frontier.add(grid[startY + 2][startX]);
+        if (grid[currentY + 2]
+            && grid[currentY + 2][currentX]
+            && grid[currentY + 2][currentX].status == "wall") {
+                frontier.add(grid[currentY + 2][currentX]);
         }
-        console.log(frontier);
-        console.log("Frontier size: " + frontier.size);
 
-//4. While the frontier list is not empty:
-//      - Pick a random cell from the frontier list
-//      - Set that cell as a path
-//      - Compute new frontier cells
-//      - Remove current cell from frontier list
         while (frontier.size > 0) {
-/*
-If you hold the current cell in a variable I think you can remove it from
-the frontier set right away and use the for loop for all cells including
-the starting cell
-*/
-        }
+            let interatable = [...frontier.values()];
+            let randI = Math.floor(Math.random() * interatable.length);
+            currentY = interatable[randI].y;
+            currentX = interatable[randI].x;
+            currentCell = grid[currentY][currentX];
+            grid[currentY][currentX].status = "path";
 
+            let i = 0;
+            let j = 0
+            let carveFound = false;
+
+//BUG IS FROM HERE
+
+            while (i < currentCell.neighbors.length && carveFound == false) {
+                let neighborCell = currentCell.neighbors[i];
+
+                while (j < neighborCell.neighbors.length
+                    && carveFound == false) {
+                        if (neighborCell.neighbors[i].status == "path"
+                            && neighborCell.neighbors[i] != currentCell) {
+                                carveFound = true;
+                                neighborCell.status = "path";
+                            }
+                        j++;
+                }
+                i++;
+            }
+
+//TO HERE
+
+            if (grid[currentY][currentX - 2]
+                && grid[currentY][currentX - 2].status == "wall") {
+                    frontier.add(grid[currentY][currentX - 2]);
+            }
+            if (grid[currentY][currentX + 2]
+                && grid[currentY][currentX + 2].status == "wall") {
+                    frontier.add(grid[currentY][currentX + 2]);
+            }
+            if (grid[currentY - 2]
+                && grid[currentY - 2][currentX]
+                && grid[currentY - 2][currentX].status == "wall") {
+                    frontier.add(grid[currentY - 2][currentX]);
+            }
+            if (grid[currentY + 2]
+                && grid[currentY + 2][currentX]
+                && grid[currentY + 2][currentX].status == "wall") {
+                    frontier.add(grid[currentY + 2][currentX]);
+            }
+            frontier.delete(currentCell);
+        }
         return grid;
+    }
+
+    drawMaze(grid) {
+        let output = "";
+        for (let y = 0; y < grid.length; y++) {
+            for (let x = 0; x < grid[y].length; x++) {
+                if (grid[y][x].status == "wall") {
+                    output += "■ ";
+                }
+                else {
+                    output += " ";
+                }
+            }
+            output += "\n";
+        }
+        console.log(output);
     }
 }
 
