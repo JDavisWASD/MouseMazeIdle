@@ -34,7 +34,7 @@ class PrimsMaze {
                 if (grid[y][x - 1]) {
                     let westNeighbor = grid[y][x - 1];
                     grid[y][x].neighbors.push(westNeighbor);
-                    westNeighbor.neighbors.push(grid[y][x - 1]);
+                    westNeighbor.neighbors.push(grid[y][x]);
                 }
                 if (grid[y - 1] && grid[y - 1][x]) {
                     let northNeighbor = grid[y - 1][x];
@@ -44,10 +44,20 @@ class PrimsMaze {
             }
         }
 
+        console.log("Starting Grid:");
+        this.drawMaze(grid);
+
         let currentY = Math.floor(Math.random() * grid.length);
         let currentX = Math.floor(Math.random() * grid[currentY].length);
         let currentCell = grid[currentY][currentX];
         currentCell.status = "path";
+
+        console.log("Starting Cell: ("
+        + currentCell.y
+        + ","
+        + currentCell.x
+        + ")");
+        this.drawMaze(grid);
 
         if (grid[currentY][currentX - 2]
             && grid[currentY][currentX - 2].status == "wall") {
@@ -79,18 +89,45 @@ class PrimsMaze {
             let i = 0;
             let carveFound = false;
 
+            console.log("Frontier Cell: ("
+            + currentCell.y
+            + ","
+            + currentCell.x
+            + ")");
+            this.drawMaze(grid);
+
 //BUG IS FROM HERE
 
             while (i < currentCell.neighbors.length && carveFound == false) {
                 let neighborCell = currentCell.neighbors[i];
                 let j = 0;
 
+                console.log("Neighbor Cell: ("
+                + neighborCell.y
+                + ","
+                + neighborCell.x
+                + ")");
+
                 while (j < neighborCell.neighbors.length
                     && carveFound == false) {
+
+                        console.log("Neighbor^2 Cell: ("
+                        + neighborCell.neighbors[j].y
+                        + ","
+                        + neighborCell.neighbors[j].x
+                        + ")");
+
                         if (neighborCell.neighbors[j].status == "path"
                             && neighborCell.neighbors[j] != currentCell) {
                                 carveFound = true;
                                 neighborCell.status = "path";
+
+                                console.log("In Between Cell: ("
+                                + neighborCell.neighbors[j].y
+                                + ","
+                                + neighborCell.neighbors[j].x
+                                + ")");
+                                this.drawMaze(grid);
                             }
                         j++;
                 }
@@ -119,7 +156,6 @@ class PrimsMaze {
             }
             frontier.delete(currentCell);
         }
-        this.drawMaze(grid);
         return grid;
     }
 
