@@ -77,18 +77,18 @@ class PrimsMaze {
             grid[currentY][currentX].status = "path";
 
             let i = 0;
-            let j = 0
             let carveFound = false;
 
 //BUG IS FROM HERE
 
             while (i < currentCell.neighbors.length && carveFound == false) {
                 let neighborCell = currentCell.neighbors[i];
+                let j = 0;
 
                 while (j < neighborCell.neighbors.length
                     && carveFound == false) {
-                        if (neighborCell.neighbors[i].status == "path"
-                            && neighborCell.neighbors[i] != currentCell) {
+                        if (neighborCell.neighbors[j].status == "path"
+                            && neighborCell.neighbors[j] != currentCell) {
                                 carveFound = true;
                                 neighborCell.status = "path";
                             }
@@ -119,6 +119,7 @@ class PrimsMaze {
             }
             frontier.delete(currentCell);
         }
+        this.drawMaze(grid);
         return grid;
     }
 
@@ -130,7 +131,7 @@ class PrimsMaze {
                     output += "■ ";
                 }
                 else {
-                    output += " ";
+                    output += "  ";
                 }
             }
             output += "\n";
